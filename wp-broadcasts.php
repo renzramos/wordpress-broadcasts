@@ -34,3 +34,19 @@ class WPBroadcasts {
 }
 
 $wp_broadcasts = new WPBroadcasts();
+
+
+
+function wp_broadcasts_enqueue_admin_script( $hook ) {
+
+    if ( 'toplevel_page_wp_broadcasts' != $hook ) {
+        return;
+    }
+    wp_enqueue_style('wp-broadcast', plugins_url('assets/css/style.css', __FILE__ ));
+    wp_enqueue_style('magnific-popup', plugins_url('assets/css/third-party/magnific-popup.css', __FILE__ ));
+    
+    wp_enqueue_script('wp-broadcast', plugins_url('assets/js/script.js',__FILE__ ));
+    wp_enqueue_script('magnific-popup', plugins_url('assets/js/third-party/jquery.magnific-popup.min.js',__FILE__ ));
+
+    }
+add_action( 'admin_enqueue_scripts', 'wp_broadcasts_enqueue_admin_script' );
