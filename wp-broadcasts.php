@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: WP Broadcasts
- * Plugin URI: https://www.renzramos.com
- * Description: Simple plugin to broadcast emails
- * Version: 1.0
- * Author: Renz Ramos
- * Author URI: https://www.renzramos.com
- */
+* Plugin Name: WP Broadcasts
+* Plugin URI: https://www.renzramos.com
+* Description: Simple plugin to broadcast emails
+* Version: 1.0
+* Author: Renz Ramos
+* Author URI: https://www.renzramos.com
+*/
 
 require('includes/api.php');
 
