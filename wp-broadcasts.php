@@ -25,18 +25,24 @@ class WPBroadcasts {
     }
 
     public function wp_brodcasts_ajax(){
+
         add_action( 'wp_ajax_wp_broadcast_get_broadcasts', array($this,'wp_broadcast_get_broadcasts') );
         add_action( 'wp_ajax_wp_broadcast_post_broadcasts', array($this,'wp_broadcast_post_broadcasts') );
         add_action( 'wp_ajax_wp_broadcast_queue_broadcast', array($this,'wp_broadcast_queue_broadcast') );
         add_action( 'wp_ajax_wp_broadcast_delete_broadcast', array($this,'wp_broadcast_delete_broadcast') );
+
     }
 
     public function wp_broadcasts_admin_menu(){
+
         add_menu_page( 'WP Broadcasts', 'WP Broadcasts', 'manage_options', 'wp_broadcasts',array($this,'wp_broadcasts_admin_page'));
+    
     }
 
     public function wp_broadcasts_admin_page(){
-        require('includes/front-end.php');
+        
+        require_once('includes/front-end.php');
+
     }
 
     public function wp_broadcasts_enqueue_admin_script( $hook ) {
@@ -53,6 +59,7 @@ class WPBroadcasts {
     }
 
     function wp_broadcast_get_broadcasts() {
+
         global $wpdb;
         $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
         $broadcasts = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$broadcasts_table} ORDER BY id DESC"));
@@ -100,10 +107,12 @@ class WPBroadcasts {
         <?php endif; ?>
         <?php
         wp_die();
+
     }
 
     
     function wp_broadcast_post_broadcasts() {
+
         $response = array();
 
         global $wpdb;
@@ -115,6 +124,7 @@ class WPBroadcasts {
 
         echo json_encode($response);
         wp_die();
+
     }
 
     

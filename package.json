@@ -1,0 +1,27 @@
+{
+  "name": "wp-broadcasts",
+  "version": "1.0.0",
+  "description": "WordPress Broadcasts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scss": "node-sass --watch resources/scss -o assets/css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renzramos/wordpress-broadcasts.git"
+  },
+  "keywords": [
+    "wordpress",
+    "broadcasts"
+  ],
+  "author": "Renz Ramos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/renzramos/wordpress-broadcasts/issues"
+  },
+  "homepage": "https://github.com/renzramos/wordpress-broadcasts#readme",
+  "dependencies": {
+    "node-sass": "^4.13.1"
+  }
+}

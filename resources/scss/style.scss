@@ -1,0 +1,102 @@
+$font-stack:    Helvetica, sans-serif;
+$primary-color: #333;
+
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+
+.wrap{
+    h1{
+        margin-bottom:15px;
+    }
+    h2{
+        margin-bottom:15px;
+    }
+}
+
+body{
+    .mfp-bg {
+        z-index: 9999;
+    }
+    .mfp-wrap {
+        z-index: 999999;
+    }   
+}
+
+
+.alert {
+    background: #FAFAFA;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.white-popup {
+  position: relative;
+  background: #FFF;
+  padding: 20px;
+  width: auto;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+
+.broadcast-action-container a {
+    display: inline-block;
+    background: #d5d5d5;
+    color: black;
+    padding: 0px 10px;
+}
+.form-container{
+    label{
+        display:block;
+        margin-bottom:5px;
+    }
+    .form-control {
+        width: 100%;
+        margin-bottom:15px;
+    }
+    header {
+        font-size: 20px;
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+}
+
+.form-action{
+    text-align:right;
+    button {
+        background: #2980b9;
+        color: white;
+        padding: 5px 15px;
+        border: none;
+    }
+}
+
+
+.broadcast-action-column {
+    width: 200px;
+}
+
+#wp-broadcast-status-container{
+    .wp-status {
+        background: #FAFAFA;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    .wp-status.wp-success {
+        background: #00b894;
+        color: white;
+    }
+    .wp-status-close {
+        float: right;
+        font-size: 23px;
+        font-weight: bold;
+        position: relative;
+        top: -3px;
+        cursor:pointer;
+    }
+}
