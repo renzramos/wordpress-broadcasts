@@ -22,6 +22,9 @@ class WPBroadcasts {
         * Description
         * Test Broadcast
         */
+
+        add_action( 'admin_enqueue_scripts', array($this,'wp_broadcasts_enqueue_admin_script') );
+
     }
     public function wp_broadcasts_admin_menu(){
         add_menu_page( 'WP Broadcasts', 'WP Broadcasts', 'manage_options', 'wp_broadcasts',array($this,'wp_broadcasts_admin_page'));
@@ -31,22 +34,23 @@ class WPBroadcasts {
         require('includes/front-end.php');
     }
 
+    public function wp_broadcasts_enqueue_admin_script( $hook ) {
+
+        if ( 'toplevel_page_wp_broadcasts' != $hook ) {
+            return;
+        }
+        wp_enqueue_style('wp-broadcast', plugins_url('assets/css/style.css', __FILE__ ));
+        wp_enqueue_style('magnific-popup', plugins_url('assets/css/third-party/magnific-popup.css', __FILE__ ));
+
+        wp_enqueue_script('wp-broadcast', plugins_url('assets/js/script.js',__FILE__ ));
+        wp_enqueue_script('magnific-popup', plugins_url('assets/js/third-party/jquery.magnific-popup.min.js',__FILE__ ));
+
+    }
+
 }
 
 $wp_broadcasts = new WPBroadcasts();
 
 
 
-function wp_broadcasts_enqueue_admin_script( $hook ) {
 
-    if ( 'toplevel_page_wp_broadcasts' != $hook ) {
-        return;
-    }
-    wp_enqueue_style('wp-broadcast', plugins_url('assets/css/style.css', __FILE__ ));
-    wp_enqueue_style('magnific-popup', plugins_url('assets/css/third-party/magnific-popup.css', __FILE__ ));
-    
-    wp_enqueue_script('wp-broadcast', plugins_url('assets/js/script.js',__FILE__ ));
-    wp_enqueue_script('magnific-popup', plugins_url('assets/js/third-party/jquery.magnific-popup.min.js',__FILE__ ));
-
-    }
-add_action( 'admin_enqueue_scripts', 'wp_broadcasts_enqueue_admin_script' );
