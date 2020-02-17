@@ -30,6 +30,8 @@ class WPBroadcasts {
         add_action( 'wp_ajax_wp_broadcast_post_broadcasts', array($this,'wp_broadcast_post_broadcasts') );
         add_action( 'wp_ajax_wp_broadcast_queue_broadcast', array($this,'wp_broadcast_queue_broadcast') );
         add_action( 'wp_ajax_wp_broadcast_delete_broadcast', array($this,'wp_broadcast_delete_broadcast') );
+        add_action( 'wp_ajax_wp_broadcast_activate_broadcast', array($this,'wp_broadcast_activate_broadcast') );
+        add_action( 'wp_ajax_wp_broadcast_deactivate_broadcast', array($this,'wp_broadcast_deactivate_broadcast') );
 
     }
 
@@ -73,25 +75,45 @@ class WPBroadcasts {
                 <th>Title</th>
                 <th>Subject</th>
                 <th>Description</th>
-                <th>Queues</th>
+                <th class="text-center">Queued</th>
+                <th class="text-center">Processed</th>
                 <th>Action</th>
             </thead>
             <tbody>
             <?php 
                 foreach ($broadcasts as $broadcast): 
                 $queues_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$broadcast_queues_table} WHERE broadcast_id = {$broadcast->id}") );
+                $process_queues_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$broadcast_queues_table} WHERE broadcast_id = {$broadcast->id} AND sent_at IS NOT NULL") );
                 ?>
                 
                     <tr>
-                        <td><code><?php echo sprintf('%04d', $broadcast->id); ?></code></td>
+                        <td class="wp-broadcast-col-id"><code><?php echo sprintf('%04d', $broadcast->id); ?></code></td>
                         <td><?php echo $broadcast->title; ?></td>
                         <td><?php echo $broadcast->subject; ?></td>
                         <td><?php echo $broadcast->description; ?></td>
-                        <td><?php echo $queues_count; ?></td>
+                        <td class="wp-broadcast-col-count">
+                            <p class="wp-broadcast-count wp-broadcast-queued-count"><?php echo $queues_count; ?></p></td>
+                        <td class="wp-broadcast-col-count">
+                            <p class="wp-broadcast-count wp-broadcast-processed-count"><?php echo $process_queues_count; ?></p>
+                        </td>
                         <td class="broadcast-action-column">
                             <div class="broadcast-action-container">
                                 <button class="wp-broadcast-view" data-id="<?php echo $broadcast->id; ?>" data-action="view" type="button">VIEW</button>
+                                
+                                <?php if ($queues_count == 0): ?>
                                 <button class="wp-broadcast-queue" data-id="<?php echo $broadcast->id; ?>" data-action="queue" type="button">QUEUE</button>
+                                <?php else: ?>
+                                    
+                                    <?php if ($broadcast->status == null): ?>
+                                    <button class="wp-broadcast-activate" data-id="<?php echo $broadcast->id; ?>" data-action="activate" type="button">ACTIVATE</button>
+                                    <?php endif; ?>
+
+                                    <?php if ($broadcast->status == 1): ?>
+                                    <button class="wp-broadcast-deactivate" data-id="<?php echo $broadcast->id; ?>" data-action="deactivate" type="button">DEACTIVATE</button>
+                                    <?php endif; ?>
+
+                                <?php endif; ?>
+
                                 <button class="wp-broadcast-delete" data-id="<?php echo $broadcast->id; ?>" data-action="delete" type="button">DELETE</button>
                             </div>
                         </td>
@@ -128,6 +150,36 @@ class WPBroadcasts {
     }
 
     
+    function wp_broadcast_activate_broadcast() {
+        
+        $response = array();
+
+        global $wpdb;
+        $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
+        $broadcast_id = $_REQUEST['id'];
+
+        $data = ['status' => 1];
+        $wpdb->update($broadcasts_table, $data, ['id' => $broadcast_id]);
+
+        echo json_encode($response);
+        wp_die();
+    }
+
+    function wp_broadcast_deactivate_broadcast() {
+        
+        $response = array();
+
+        global $wpdb;
+        $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
+        $broadcast_id = $_REQUEST['id'];
+
+        $data = ['status' => null ];
+        $wpdb->update($broadcasts_table, $data, ['id' => $broadcast_id]);
+
+        echo json_encode($response);
+        wp_die();
+    }
+
     function wp_broadcast_queue_broadcast() {
         $response = array();
 

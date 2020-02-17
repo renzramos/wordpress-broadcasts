@@ -19,6 +19,9 @@
         <label>Description</label>
         <textarea name="broadcast[description]" class="form-control"></textarea>
 
+        <label>HTML</label>
+        <textarea name="broadcast[html]" class="form-control" rows="10"></textarea>
+
         <div class="form-action">
             <button id="wp-broadcast-save" type="button">Submit</button>
         </div>

@@ -46,6 +46,27 @@ jQuery(document).ready(function($){
                 }
                
             });
+
+
+            $(document).on('click', '.wp-broadcast-activate', function () {
+
+                var r = confirm("Are you sure you want activate this broadcast?");
+                if (r == true) {
+                    wpBroadcast.events.activateBroadcast($(this));
+                }
+
+            });
+
+            $(document).on('click', '.wp-broadcast-deactivate', function () {
+
+                var r = confirm("Are you sure you want deactivate this broadcast?");
+                if (r == true) {
+                    wpBroadcast.events.deactivateBroadcast($(this));
+                }
+
+            });
+
+
             
         },
         elem : {
@@ -83,6 +104,30 @@ jQuery(document).ready(function($){
                 var id = button.attr('data-id');
                 var data = {
                     action : 'wp_broadcast_queue_broadcast',
+                    id : id
+                }
+                $.post(adminAjaxURL, data, function(broadcastsHTML){
+                   wpBroadcast.events.getBroadcasts();
+                });
+                
+            },
+            activateBroadcast : function(button){
+                
+                var id = button.attr('data-id');
+                var data = {
+                    action : 'wp_broadcast_activate_broadcast',
+                    id : id
+                }
+                $.post(adminAjaxURL, data, function(broadcastsHTML){
+                   wpBroadcast.events.getBroadcasts();
+                });
+                
+            },
+            deactivateBroadcast : function(button){
+                
+                var id = button.attr('data-id');
+                var data = {
+                    action : 'wp_broadcast_deactivate_broadcast',
                     id : id
                 }
                 $.post(adminAjaxURL, data, function(broadcastsHTML){
