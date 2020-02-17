@@ -27,7 +27,13 @@ class WPBroadcasts {
     public function wp_brodcasts_ajax(){
 
         add_action( 'wp_ajax_wp_broadcast_get_broadcasts', array($this,'wp_broadcast_get_broadcasts') );
+
         add_action( 'wp_ajax_wp_broadcast_post_broadcasts', array($this,'wp_broadcast_post_broadcasts') );
+        add_action( 'wp_ajax_wp_broadcast_update_broadcast', array($this,'wp_broadcast_update_broadcast') );
+
+        add_action( 'wp_ajax_wp_broadcast_view_broadcast', array($this,'wp_broadcast_view_broadcast') );
+        add_action( 'wp_ajax_wp_broadcast_preview_broadcast', array($this,'wp_broadcast_preview_broadcast') );
+
         add_action( 'wp_ajax_wp_broadcast_queue_broadcast', array($this,'wp_broadcast_queue_broadcast') );
         add_action( 'wp_ajax_wp_broadcast_delete_broadcast', array($this,'wp_broadcast_delete_broadcast') );
         add_action( 'wp_ajax_wp_broadcast_activate_broadcast', array($this,'wp_broadcast_activate_broadcast') );
@@ -37,7 +43,7 @@ class WPBroadcasts {
 
     public function wp_broadcasts_admin_menu(){
 
-        add_menu_page( 'WP Broadcasts', 'WP Broadcasts', 'manage_options', 'wp_broadcasts',array($this,'wp_broadcasts_admin_page'));
+        add_menu_page( 'WP Broadcasts', 'WP Broadcasts', 'manage_options', 'wp_broadcasts',array($this,'wp_broadcasts_admin_page'),' dashicons-email-alt');
     
     }
 
@@ -55,6 +61,13 @@ class WPBroadcasts {
         wp_enqueue_style('wp-broadcast', plugins_url('assets/css/style.css', __FILE__ ));
         wp_enqueue_style('magnific-popup', plugins_url('assets/css/third-party/magnific-popup.css', __FILE__ ));
 
+
+        $cm_settings['codeEditor'] = wp_enqueue_code_editor(array('type' => 'text/html'));
+        wp_localize_script('jquery', 'cm_settings', $cm_settings);
+        wp_enqueue_script('wp-theme-plugin-editor');
+        wp_enqueue_style('wp-codemirror');
+
+        // wp_enqueue_script('wp-broadcast-ace', 'https://pagecdn.io/lib/ace/1.4.8/ace.js');
         wp_enqueue_script('wp-broadcast', plugins_url('assets/js/script.js',__FILE__ ));
         wp_enqueue_script('magnific-popup', plugins_url('assets/js/third-party/jquery.magnific-popup.min.js',__FILE__ ));
 
@@ -74,23 +87,21 @@ class WPBroadcasts {
                 <th>ID</th>
                 <th>Title</th>
                 <th>Subject</th>
-                <th>Description</th>
                 <th class="text-center">Queued</th>
-                <th class="text-center">Processed</th>
+                <th class="text-center">Sent</th>
                 <th>Action</th>
             </thead>
             <tbody>
             <?php 
                 foreach ($broadcasts as $broadcast): 
-                $queues_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$broadcast_queues_table} WHERE broadcast_id = {$broadcast->id}") );
+                $queues_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$broadcast_queues_table} WHERE broadcast_id = {$broadcast->id} AND sent_at IS NULL") );
                 $process_queues_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$broadcast_queues_table} WHERE broadcast_id = {$broadcast->id} AND sent_at IS NOT NULL") );
                 ?>
                 
                     <tr>
                         <td class="wp-broadcast-col-id"><code><?php echo sprintf('%04d', $broadcast->id); ?></code></td>
                         <td><?php echo $broadcast->title; ?></td>
-                        <td><?php echo $broadcast->subject; ?></td>
-                        <td><?php echo $broadcast->description; ?></td>
+                        <td class="wp-broadcast-col-subject"><?php echo $broadcast->subject; ?></td>
                         <td class="wp-broadcast-col-count">
                             <p class="wp-broadcast-count wp-broadcast-queued-count"><?php echo $queues_count; ?></p></td>
                         <td class="wp-broadcast-col-count">
@@ -98,23 +109,27 @@ class WPBroadcasts {
                         </td>
                         <td class="broadcast-action-column">
                             <div class="broadcast-action-container">
-                                <button class="wp-broadcast-view" data-id="<?php echo $broadcast->id; ?>" data-action="view" type="button">VIEW</button>
                                 
-                                <?php if ($queues_count == 0): ?>
-                                <button class="wp-broadcast-queue" data-id="<?php echo $broadcast->id; ?>" data-action="queue" type="button">QUEUE</button>
+                                <?php if ($queues_count == 0 && $process_queues_count == 0): ?>
+                                <button title="Queue Broadcast" <?php if ($broadcast->status == 2): ?>disabled<?php endif; ?> class="wp-broadcast-queue" data-id="<?php echo $broadcast->id; ?>" data-action="queue" type="button"><span class="dashicons dashicons-media-spreadsheet"></span></button>
                                 <?php else: ?>
                                     
                                     <?php if ($broadcast->status == null): ?>
-                                    <button class="wp-broadcast-activate" data-id="<?php echo $broadcast->id; ?>" data-action="activate" type="button">ACTIVATE</button>
+                                    <button title="Activate Broadcast" class="wp-broadcast-activate" data-id="<?php echo $broadcast->id; ?>" data-action="activate" type="button"><span class="dashicons dashicons-controls-play"></span></button>
                                     <?php endif; ?>
 
                                     <?php if ($broadcast->status == 1): ?>
-                                    <button class="wp-broadcast-deactivate" data-id="<?php echo $broadcast->id; ?>" data-action="deactivate" type="button">DEACTIVATE</button>
+                                    <button title="Deactivate Broadcast" class="wp-broadcast-deactivate" data-id="<?php echo $broadcast->id; ?>" data-action="deactivate" type="button"><span class="dashicons dashicons-controls-pause"></span></button>
                                     <?php endif; ?>
 
+                                    <?php if ($broadcast->status == 2): ?>
+                                    <button title="Completed Broadcast" class="wp-broadcast-completed" data-id="<?php echo $broadcast->id; ?>" data-action="completed" type="button"><span class="dashicons dashicons-yes"></span></button>
+                                    <?php endif; ?>
+                                    
                                 <?php endif; ?>
-
-                                <button class="wp-broadcast-delete" data-id="<?php echo $broadcast->id; ?>" data-action="delete" type="button">DELETE</button>
+                                    
+                                <button title="View Broadcast"  class="wp-broadcast-view" data-id="<?php echo $broadcast->id; ?>" data-action="view" type="button"><span class="dashicons dashicons-visibility"></span></button>
+                                <button title="Delete Broadcast" <?php if ($broadcast->status == 2): ?>disabled<?php endif; ?> class="wp-broadcast-delete" data-id="<?php echo $broadcast->id; ?>" data-action="delete" type="button"><span class="dashicons dashicons-trash"></span></button>
                             </div>
                         </td>
                     </tr>
@@ -141,10 +156,85 @@ class WPBroadcasts {
         $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
         
         $broadcast = $_REQUEST['broadcast'];
+
+        $broadcast['html'] = base64_encode($broadcast['html']);
+
+
         $broadcast_data = $wpdb->insert($broadcasts_table, $broadcast);
         $response['broadcast'] = $broadcast_data;
 
         echo json_encode($response);
+        wp_die();
+
+    }
+
+
+    function wp_broadcast_update_broadcast() {
+
+        $response = array();
+
+        global $wpdb;
+        $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
+        
+        $id = $_REQUEST['id'];
+        $html = $_REQUEST['html'];
+
+        $broadcast = array();
+        $broadcast['html'] = base64_encode($html);
+
+        $broadcast_data = $wpdb->update($broadcasts_table,$broadcast, ['id' => $id]);
+        $response['broadcast'] = $broadcast_data;
+
+        echo json_encode($response);
+        wp_die();
+
+    }
+
+    function wp_broadcast_view_broadcast() {
+
+        $response = array();
+
+        global $wpdb;
+        $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
+        $broadcast_id = $_REQUEST['id'];
+        $broadcast = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$broadcasts_table} WHERE id = '{$broadcast_id}'"));
+        $response['broadcast'] = $broadcast;
+        ?>
+        <div class="wp-broadcast-editor-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <?php 
+                    $html = str_replace('\"','"',base64_decode($broadcast->html));
+                    $html = str_replace("\'","'",$html);
+                    ?>
+                    <button type="button" id="btn-save-editor">Save</button>
+                    <button type="button" id="btn-close-editor">Close</button>
+                    <textarea name="html" data-id="<?php echo $broadcast->id; ?>" id="editor"><?php echo $html; ?></textarea>
+                </div>
+                <div class="col-md-8">
+                    <iframe id="wp-broadcast-preview" src="<?php echo admin_url('admin-ajax.php') . '?action=wp_broadcast_preview_broadcast&id=' . $broadcast->id; ?>"></iframe>
+                </div>
+            </div>
+        </div>
+        <?php
+        // echo json_encode($response);
+        wp_die();
+
+    }
+
+    function wp_broadcast_preview_broadcast() {
+
+        $response = array();
+        
+        $broadcast_id = $_REQUEST['id'];
+        global $wpdb;
+        $broadcasts_table = $wpdb->prefix . 'wp_broadcasts';
+        $broadcast = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$broadcasts_table} WHERE id = '{$broadcast_id}'"));
+        
+        
+        $html = str_replace('\"','"',base64_decode($broadcast->html));
+        $html = str_replace("\'","'",$html);
+        echo $html;
         wp_die();
 
     }
@@ -159,6 +249,9 @@ class WPBroadcasts {
         $broadcast_id = $_REQUEST['id'];
 
         $data = ['status' => 1];
+
+        
+
         $wpdb->update($broadcasts_table, $data, ['id' => $broadcast_id]);
 
         echo json_encode($response);

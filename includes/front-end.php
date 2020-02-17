@@ -1,5 +1,7 @@
 <div class="wrap" data-ajax-url="<?php echo admin_url('admin-ajax.php'); ?>">
 <h1>WP Broadcasts</h1>
+<p>Send emails to all your users instantly</p>
+
 
 <div id="wp-broadcast-status-container"></div>
 <button id="wp-broadcast-add" data-mfp-src="#form-broadcast-container" class="open-popup-link">ADD NEW BROADCAST</button>

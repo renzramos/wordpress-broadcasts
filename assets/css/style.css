@@ -10,15 +10,23 @@ body {
   font-size: 13px;
   padding: 10px 20px; }
 
+#wp-broadcasts-container th {
+  text-transform: uppercase;
+  font-size: 11px;
+  text-align: center; }
+
 #wp-broadcasts-container td {
   vertical-align: middle;
   border-bottom: 1px solid rgba(51, 51, 51, 0.23); }
 
 #wp-broadcasts-container td.broadcast-action-column {
-  width: 278px; }
+  width: 118px; }
 
 #wp-broadcasts-container td.wp-broadcast-col-id {
   width: 45px; }
+
+#wp-broadcasts-container td.wp-broadcast-col-subject {
+  width: 40%; }
 
 .wp-broadcast-col-count {
   width: 70px;
@@ -44,8 +52,15 @@ body {
 .broadcast-action-container button {
   border: none;
   font-size: 12px;
-  padding: 5px 8px;
-  width: 90px; }
+  padding: 5px 8px; }
+
+.broadcast-action-container button:disabled {
+  background: #333;
+  opacity: .2; }
+
+.broadcast-action-container .wp-broadcast-completed {
+  background: #4CAF50;
+  color: white; }
 
 .broadcast-action-container .wp-broadcast-deactivate {
   background: #d35400;
@@ -72,6 +87,41 @@ body {
 
 .wrap h2 {
   margin-bottom: 15px; }
+
+.wrap h1 span {
+  display: block;
+  font-size: 8px;
+  opacity: .5; }
+
+.wrap h1 + p {
+  margin-top: -20px; }
+
+#editor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0; }
+
+.wp-broadcast-editor-container .row {
+  display: flex; }
+
+.wp-broadcast-editor-container .row > div {
+  position: relative; }
+
+.wp-broadcast-editor-container .col-md-4 {
+  width: 45%; }
+
+.wp-broadcast-editor-container .col-md-8 {
+  width: 55%; }
+
+body .CodeMirror {
+  height: 100vh; }
+
+.wp-broadcast-editor-container textarea,
+.wp-broadcast-editor-container iframe {
+  width: 100%;
+  height: 100%; }
 
 body .mfp-bg {
   z-index: 9999; }
@@ -124,19 +174,19 @@ body .mfp-wrap {
 .broadcast-action-column {
   width: 200px; }
 
-#wp-broadcast-status-container .wp-status {
-  background: #FAFAFA;
-  padding: 10px;
-  margin-bottom: 15px; }
-
-#wp-broadcast-status-container .wp-status.wp-success {
-  background: #00b894;
-  color: white; }
-
-#wp-broadcast-status-container .wp-status-close {
-  float: right;
-  font-size: 23px;
-  font-weight: bold;
-  position: relative;
-  top: -3px;
-  cursor: pointer; }
+#wp-broadcast-status-container {
+  clear: both; }
+  #wp-broadcast-status-container .wp-status {
+    background: #FAFAFA;
+    padding: 10px;
+    margin-bottom: 15px; }
+  #wp-broadcast-status-container .wp-status.wp-success {
+    background: #00b894;
+    color: white; }
+  #wp-broadcast-status-container .wp-status-close {
+    float: right;
+    font-size: 23px;
+    font-weight: bold;
+    position: relative;
+    top: -3px;
+    cursor: pointer; }

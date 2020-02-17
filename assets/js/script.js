@@ -66,10 +66,33 @@ jQuery(document).ready(function($){
 
             });
 
+            $(document).on('click', '.wp-broadcast-view', function () {
+
+                wpBroadcast.events.viewBroadcast($(this));
+                
+            });
+            
+            
+            $(document).on('click', '#btn-save-editor', function () {
+
+                var id = $('#editor').attr('data-id');
+                var html = wpBroadcast.elem.broadcastEditor.codemirror.getValue();
+                
+                wpBroadcast.events.updateBroadcast(id, html);
+            });
+
+            $(document).on('click', '#btn-close-editor', function () {
+
+                $('.wp-broadcast-editor-container').remove();
+                wpBroadcast.elem.addBroadcast.show();
+                wpBroadcast.elem.broadcastsContainer.show();
+
+            });
 
             
         },
         elem : {
+            broadcastEditor : null,
             broadcastsContainer : $('#wp-broadcasts-container'),
             broadcastStatusContainer : $('#wp-broadcast-status-container'),
             addBroadcast : $('#wp-broadcast-add'),
@@ -111,6 +134,25 @@ jQuery(document).ready(function($){
                 });
                 
             },
+            viewBroadcast : function(button){
+                
+                var id = button.attr('data-id');
+                var data = {
+                    action: 'wp_broadcast_view_broadcast',
+                    id : id
+                }
+                $.post(adminAjaxURL, data, function (broadcastDataHTML){
+                    
+                    $('#editor').remove();
+                    wpBroadcast.elem.broadcastStatusContainer.before(broadcastDataHTML);
+                    wpBroadcast.elem.addBroadcast.hide();
+                    wpBroadcast.elem.broadcastsContainer.hide();
+
+                    wpBroadcast.elem.broadcastEditor = wp.codeEditor.initialize( $('#editor') , cm_settings);
+             
+                });
+                
+            },
             activateBroadcast : function(button){
                 
                 var id = button.attr('data-id');
@@ -144,7 +186,20 @@ jQuery(document).ready(function($){
                     }
                 });
 
+            },
+
+            updateBroadcast : function (id, html){
+
+                var data = {
+                    action: 'wp_broadcast_update_broadcast',
+                    id: id,
+                    html: html
+                };
                 
+                $.post(adminAjaxURL, data, function (response) {
+                    console.log(response);
+                    document.getElementById('wp-broadcast-preview').contentWindow.location.reload();
+                });
 
             },
 
