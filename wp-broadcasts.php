@@ -209,7 +209,7 @@ class WPBroadcasts {
                     ?>
                     <button type="button" id="btn-save-editor">Save</button>
                     <button type="button" id="btn-close-editor">Close</button>
-                    <textarea name="html" data-id="<?php echo $broadcast->id; ?>" id="editor"><?php echo $html; ?></textarea>
+                    <textarea name="html" data-id="<?php echo $broadcast->id; ?>" id="editor"><?php //echo $html; ?></textarea>
                 </div>
                 <div class="col-md-8">
                     <iframe id="wp-broadcast-preview" src="<?php echo admin_url('admin-ajax.php') . '?action=wp_broadcast_preview_broadcast&id=' . $broadcast->id; ?>"></iframe>
